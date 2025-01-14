@@ -1,0 +1,3 @@
+class User(models.Model):
+    ...
+    mobile_number = models.CharField(max_length=15)

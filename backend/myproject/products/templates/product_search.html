@@ -1,0 +1,35 @@
+<form method="GET" action="{% url 'product_search' %}">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search for products (e.g., Dress)" />
+    
+    <input type="number" name="price" value="{{ request.GET.price }}" placeholder="Price below" />
+    <button type="submit">Search</button>
+</form>
+
+<h2>Search Results:</h2>
+
+<ul>
+    {% for product in products %}
+        <li>{{ product.name }} - ${{ product.price }} {% if product.discount_price %} (Discounted: ${{ product.discount_price }}) {% endif %}</li>
+    {% empty %}
+        <li>No products found.</li>
+    {% endfor %}
+</ul>
+
+<!-- Pagination controls -->
+<div class="pagination">
+    <span class="step-links">
+        {% if products.has_previous %}
+            <a href="?page=1&q={{ request.GET.q }}&price={{ request.GET.price }}">First</a>
+            <a href="?page={{ products.previous_page_number }}&q={{ request.GET.q }}&price={{ request.GET.price }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ products.number }} of {{ products.paginator.num_pages }}.
+        </span>
+
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}&q={{ request.GET.q }}&price={{ request.GET.price }}">Next</a>
+            <a href="?page={{ products.paginator.num_pages }}&q={{ request.GET.q }}&price={{ request.GET.price }}">Last</a>
+        {% endif %}
+    </span>
+</div>

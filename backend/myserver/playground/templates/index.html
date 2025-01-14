@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   <h1> Hello World</h1> 
+   
+   <div>
+    {% for x in obj %}
+    <div>
+        <h1>{{ x.name }}</h1>
+        <p>{{ x.des }}</p>
+    </div>
+   {% endfor %}
+   </div>
+</body>
+</html>

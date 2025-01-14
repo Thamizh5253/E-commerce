@@ -1,0 +1,67 @@
+.toggle-container {
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.toggle-title {
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  transition: transform 0.3s ease, color 0.3s ease;
+  width: 100%;
+  left: 0;
+  top: -50px;
+}
+
+.toggle-title.left {
+  transform: translateX(-100%);
+  color: #007bff; /* Blue for Login */
+}
+
+.toggle-title.right {
+  transform: translateX(100%);
+  color: #28a745; /* Green for Sign Up */
+}
+
+.toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.toggle-buttons button {
+  border: none;
+  background-color: #f0f0f0;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.toggle-buttons button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.toggle-buttons button:not(.active):hover {
+  background-color: #e0e0e0;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
