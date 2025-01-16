@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'finekart',
+        'NAME': 'finecart',
         'USER': 'postgres',
         'PASSWORD': 'admin@123',
         'HOST': 'localhost',

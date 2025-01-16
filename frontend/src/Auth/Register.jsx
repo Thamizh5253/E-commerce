@@ -18,7 +18,7 @@ function RegistrationForm() {
         email,
       });
       console.log(response);                                                                                             
-     
+      alert("Registration successful. Please login.");
       setUsername("");
       setPassword("");
       setEmail("");
