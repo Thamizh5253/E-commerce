@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Box, TextField, Button, Typography, CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 
-const UniversalSearchRegex = () => {
+const UniversalSearchRegex = ({setProducts}) => {
   const [searchInput, setSearchInput] = useState(""); // Search box input
   const [results, setResults] = useState([]);
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
-    setLoading(true);
 
     try {
       const token = localStorage.getItem("access_token");
@@ -54,7 +53,6 @@ const UniversalSearchRegex = () => {
         queryParams.append("q", searchInput.trim());
       } else {
         alert("Invalid search format. Please follow supported patterns.");
-        setLoading(false);
         return;
       }
 
@@ -66,17 +64,15 @@ const UniversalSearchRegex = () => {
         }
       );
 
-      setResults(response.data); // Set the search results
+      setProducts(response.data); // Set the search results
     } catch (error) {
       console.error("Error during search:", error);
     }
 
-    setLoading(false);
   };
 
   return (
     
-    // <Box sx={{ padding: "20px", backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
       
 
       <Box
@@ -123,7 +119,6 @@ const UniversalSearchRegex = () => {
       </Box>
 
      
-    
   );
 };
 

@@ -19,16 +19,17 @@ import { Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../Components/Header";
+import Search from "../Components/Search";
 
 const Product = ({
   filterList,
   categoriesInput,
+  setCategoriesInput,
   setFilterList,
 }) => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage] = useState(5);
-  const [searchQuery, setSearchQuery] = useState('');  // State to track search input
   const [sortPriceOrder, setSortPriceOrder] = useState('asc'); // State to track sorting order (ascending or descending)
   const navigate = useNavigate();
 
@@ -76,43 +77,48 @@ const Product = ({
         console.error("Error fetching products:", error);
       }
     };
+
+    const fetchCategories = async () => {
+
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        console.error("No access token found. Redirecting to login...");
+        navigate("/"); // Redirect to login page if no token
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/categories/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // setCategories(response.data);
+
+        const categoryOptions = response.data.map((category) => ({
+          id: category.id,
+          name: category.name,
+        }));
+
+        setCategoriesInput(categoryOptions);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        if (error.response && error.response.status === 401) {
+          navigate("/"); // Redirect to login if token is invalid
+        }
+      }
+    };
+
+    fetchCategories();
+
   
     fetchProducts(); // Initial fetch without search query
   
   }, [filterList, sortPriceOrder]);  // It will re-run when filters or sortPriceOrder change
   
-  const handleSearch = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        console.error("Access token is missing");
-        return;
-      }
   
-      let fetchedProducts = [];
-  
-      if (searchQuery) {
-        const response = await axios.get(`http://127.0.0.1:8000/api/products/search/?q=${searchQuery}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        
-        fetchedProducts = response.data;
-      }
-  
-      // Sort products by price
-      if (sortPriceOrder === 'asc') {
-        fetchedProducts.sort((a, b) => a.price - b.price);
-      } else {
-        fetchedProducts.sort((a, b) => b.price - a.price);
-      }
-
-      setProducts(fetchedProducts);  // Update the products with the result of the search query
-    } catch (error) {
-      console.error("Error searching products:", error);
-    }
-  };
   
   const handleBack = () => {
     navigate("/categories");
@@ -193,43 +199,16 @@ const Product = ({
   sx={{
     display: "flex", 
     alignItems: "center", 
-    width: "250px", 
+    width: "550px", 
     marginLeft: "16px", 
     backgroundColor: "#fff",
     borderRadius: "8px",
     padding: "2px"
   }}
 >
-  <TextField
-    label="Search Products"
-    variant="outlined"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    sx={{
-      flexGrow: 1,
-      borderRadius: "10px 0 0 10px", // Rounded left corners for text input
-      backgroundColor: "#fff",
-    }}
-    InputProps={{
-     
-      style: {
-        height: '53px', // Adjusting height of the input box
-      },
-    }}
-    
-  />
-  <Button
-    variant="contained"
-    color="primary"
-    onClick={handleSearch}  // Handle the search button click
-    sx={{
-      borderRadius: "0 8px 8px 0", // Round only the right corners of the button
-      padding: "10px 16px", 
-      height:"53px",
-    }}
-  >
-    Search
-  </Button>
+ 
+
+  <Search setProducts={setProducts}></Search>
 </Box>
 
   {/* Categories Filter */}
@@ -298,7 +277,7 @@ const Product = ({
                   Price {sortPriceOrder === 'asc' ? '↑' : '↓'}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#3f51b5" }}>Discount Price</TableCell>
-                <TableCell sx={{ fontWeight: "bold", color: "#3f51b5" }}>Category ID</TableCell>
+                {/* <TableCell sx={{ fontWeight: "bold", color: "#3f51b5" }}>Category ID</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -318,7 +297,7 @@ const Product = ({
                   <TableCell>{product.no_of_units}</TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.discount_price}</TableCell>
-                  <TableCell>{product.category}</TableCell>
+                  {/* <TableCell>{product.category}</TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

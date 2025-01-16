@@ -12,7 +12,7 @@ import Header from "../Components/Header";
 //   return null;
 // };
 
-const Category = ({ filterList, setFilterList, setCategoriesInput, categoriesInput }) => {
+const Category = ({  setFilterList, setCategoriesInput }) => {
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1); // Pagination state
   const itemsPerPage = 5; // Number of categories per page

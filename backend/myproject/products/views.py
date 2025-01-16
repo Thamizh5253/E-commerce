@@ -25,28 +25,58 @@ class ProductListView(APIView):
         # Return the response with the serialized product data
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# views.py
 
 from .documents import ProductDocument
 
+
 class ProductSearchView(APIView):
-    # permission_classes = [AllowAny] 
     def get(self, request):
-        query = request.GET.get('q', '')  # Get query from the request URL
-        size = int(request.GET.get('size', 50))  # Set the max number of products to return
+        # Get query parameters
+        query = request.GET.get('q', '').strip()  # Query string (e.g., "dress")
+        size = int(request.GET.get('size', 50))  # Limit the number of results
+        min_price = request.GET.get('min_price')  # Minimum price
+        max_price = request.GET.get('max_price')  # Maximum price
+        category = request.GET.get('category', '').strip()  # Category name
 
+        search = ProductDocument.search()
+
+        # Add query for product name if present
         if query:
-            # Search for products matching the query
-            products = ProductDocument.search().query('match', name=query)[:size].execute()
-        else:
-            # Return all products if there's no query
-            products = ProductDocument.search()[:size].execute()
+            search = search.query('match', name=query)
 
-        # Create a list of product dictionaries to return as a JSON response
-        product_list = [
-            {"id": product.id, "name": product.name, "category": product.category.id ,"no_of_units":product.no_of_units ,"price": product.price, "discount_price": product.discount_price}
-            for product in products
-        ]
-                # fields = ['id', 'name', 'category', 'no_of_units', 'price', 'discount_price']
+        # Add price range filter
+        if min_price and max_price:
+            search = search.filter('range', price={'gte': min_price, 'lte': max_price})
+        elif min_price:  # Only minimum price filter
+            search = search.filter('range', price={'gte': min_price})
+        elif max_price:  # Only maximum price filter
+            search = search.filter('range', price={'lte': max_price})
 
-        return Response(product_list, status=status.HTTP_200_OK)
+        # Add category filter if provided
+        if category:
+            search = search.filter('match', category__name=category)
+
+        # Execute the search
+        try:
+            results = search[:size].execute()
+
+            # Prepare the response
+            product_list = [
+                {
+                    "id": product.id,
+                    "name": product.name,
+                    "category": product.category.name if product.category else None,
+                    "no_of_units": product.no_of_units,
+                    "price": product.price,
+                    "discount_price": product.discount_price,
+                }
+                for product in results
+            ]
+
+            return Response(product_list, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
